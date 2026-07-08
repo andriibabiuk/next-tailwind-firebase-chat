@@ -31,7 +31,7 @@ export default function Home() {
 				<Users user={user} />
 			</div>
 			<div className='grow w-3/12'>
-				<ChatRoom />
+				<ChatRoom user={user} />
 			</div>
 		</div>
 	);
