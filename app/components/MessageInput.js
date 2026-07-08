@@ -1,4 +1,5 @@
 import { app } from '@/lib/firebase';
+import EmojiPicker from 'emoji-picker-react';
 import {
 	getDownloadURL,
 	getStorage,
@@ -7,12 +8,12 @@ import {
 } from 'firebase/storage';
 import { useState } from 'react';
 import { FaPaperclip, FaPaperPlane } from 'react-icons/fa';
-
 function MessageInput({ sendMessage, message, setMessage, image, setImage }) {
 	const storage = getStorage(app);
 	const [file, setFile] = useState(null);
 	const [uploadProgress, setUploadProgress] = useState(null);
 	const [imagePreview, setImagePreview] = useState(null);
+	const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 	const handleFileChange = e => {
 		const file = e.target.files[0];
 		if (file) {
@@ -50,12 +51,29 @@ function MessageInput({ sendMessage, message, setMessage, image, setImage }) {
 			},
 		);
 	};
+	const handleEmojiClick = (emojiData, event) => {
+		setMessage(prevMessage => prevMessage + emojiData.emoji);
+	};
 	return (
-		<div className='flex items-center p-4 border-t border-gray-200'>
+		<div className='relative flex items-center p-4 border-t border-gray-200'>
 			<FaPaperclip
 				onClick={() => document.getElementById('my_modal_3').showModal()}
 				className={` ${image ? 'text-blue-500' : ' text-gray-500'} mr-2 cursor-pointer`}
 			/>
+			<button
+				onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+				className={` ${image ? 'text-blue-500' : ' text-gray-500'} mr-2 cursor-pointer`}
+			>
+				😊
+			</button>
+			{showEmojiPicker && (
+				<div className='absolute right-0 bottom-full p-2'>
+					<EmojiPicker
+						onEmojiClick={handleEmojiClick}
+						autoFocusSearch={false}
+					/>
+				</div>
+			)}
 			<input
 				type='text'
 				placeholder='Type a message...'

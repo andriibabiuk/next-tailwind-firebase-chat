@@ -41,6 +41,14 @@ function MessageCard({ message, me, other }) {
 			<div
 				className={`text-white p-2 rounded-md ${isMessageFromMe ? 'bg-blue-500 self-end' : 'bg-[#19D39E] self-start'}`}
 			>
+				{message.image && (
+					// eslint-disable-next-line @next/next/no-img-element
+					<img
+						className='w-60 h-40 object-cover rounded-md'
+						src={message.image}
+						alt='Message'
+					/>
+				)}
 				<p>{message.content}</p>
 				<div className='text-xs text-gray-300'>{timeAgo(message.time)}</div>
 			</div>
