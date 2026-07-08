@@ -2,6 +2,7 @@
 import { auth, firestore } from '@/lib/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AvatarGenerator } from 'random-avatar-generator';
@@ -82,12 +83,15 @@ function Page() {
 					Chat<span className='font-bold text-[#eeab63ff]'>2</span>Chat
 				</h1>
 				<div className='flex items-center space-y-2 justify-between border border-gray-200 p-2'>
-					{/* eslint-disable-next-line @next/next/no-img-element -- external SVG avatar; next/image doesn't optimize SVGs anyway */}
-					<img
-						src={avatarUrl}
-						className='rounded-full h-20 w-20'
-						alt='avatar'
-					/>
+					{avatarUrl && (
+						<Image
+							src={avatarUrl}
+							width={80}
+							height={80}
+							className='rounded-full h-20 w-20'
+							alt='avatar'
+						/>
+					)}
 					<button
 						type='button'
 						className='btn btn-outline'

@@ -52,7 +52,7 @@ function Users({ user }) {
 							name='katy perry'
 							avatarUrl='https://avataaars.io/?accessoriesType=Wayfarers&avatarStyle=Circle&clotheColor=Black&clotheType=Hoodie&eyeType=WinkWacky&eyebrowType=UnibrowNatural&facialHairColor=Brown&facialHairType=BeardLight&hairColor=Auburn&hatColor=Gray02&mouthType=Tongue&skinColor=Black&topType=ShortHairFrizzle'
 							time='2h ago'
-							type={'user'}
+							type={'users'}
 						/>
 					</>
 				)}
