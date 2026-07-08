@@ -1,8 +1,11 @@
 'use client';
+import { auth, firestore } from '@/lib/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AvatarGenerator } from 'random-avatar-generator';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 function generateNewAvatar() {
 	const generator = new AvatarGenerator();
 	return generator.generateRandomAvatar();
@@ -14,11 +17,15 @@ function Page() {
 	const [confirmPassword, setConfirmPassword] = useState('');
 	const [errors, setErrors] = useState({});
 	const [loading, setLoading] = useState(false);
-	const [avatarUrl, setAvatarUrl] = useState(generateNewAvatar);
+	const [avatarUrl, setAvatarUrl] = useState('');
 	const router = useRouter();
 	const handleRefreshAvatar = () => {
 		setAvatarUrl(generateNewAvatar());
 	};
+	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect -- avatar is random and must be generated client-only to avoid an SSR/hydration mismatch
+		setAvatarUrl(generateNewAvatar());
+	}, []);
 	const validateForm = () => {
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		const newErrors = {};
@@ -45,7 +52,20 @@ function Page() {
 				setLoading(false);
 				return;
 			}
-			alert('Register successfully!');
+			const userCredential = await createUserWithEmailAndPassword(
+				auth,
+				email,
+				password,
+			);
+			const user = userCredential.user;
+			const docRef = doc(firestore, 'users', user.uid);
+			await setDoc(docRef, {
+				name,
+				email,
+				avatarUrl,
+			});
+			router.push('/');
+			setErrors({});
 		} catch (error) {
 			console.log(error);
 		} finally {
