@@ -3,6 +3,8 @@ import Image from 'next/image';
 
 function MessageCard({ message, me, other }) {
 	const isMessageFromMe = message.sender === me.id;
+	const avatarUrl = isMessageFromMe ? me.avatarUrl : other.avatarUrl;
+	const avatarAlt = isMessageFromMe ? me.name : other.name;
 	const timeAgo = time => {
 		if (!time) {
 			return 'sending...';
@@ -12,45 +14,34 @@ function MessageCard({ message, me, other }) {
 		return momentDate.fromNow();
 	};
 	return (
-		<div
-			key={message.id}
-			className={`flex mb-4 ${isMessageFromMe ? 'justify-end' : 'justify-start'}`}
-		>
-			<div
-				className={`w-10 h-10 mr-2 shrink-0 ${isMessageFromMe ? 'ml-2' : ''}`}
-			>
-				{!isMessageFromMe && (
-					<Image
-						src={other.avatarUrl}
-						alt='avatar'
-						width={40}
-						height={40}
-						className='w-full h-full rounded-full object-cover'
-					/>
-				)}
-				{isMessageFromMe && (
-					<Image
-						src={me.avatarUrl}
-						alt='avatar'
-						width={40}
-						height={40}
-						className='w-full h-full rounded-full object-cover'
-					/>
-				)}
+		<div className={`chat ${isMessageFromMe ? 'chat-end' : 'chat-start'}`}>
+			<div className='chat-image avatar'>
+				<div className='w-10 rounded-full'>
+					<Image src={avatarUrl} alt={avatarAlt} width={40} height={40} />
+				</div>
 			</div>
-			<div
-				className={`text-white p-2 rounded-md ${isMessageFromMe ? 'bg-blue-500 self-end' : 'bg-[#19D39E] self-start'}`}
-			>
-				{message.image && (
-					// eslint-disable-next-line @next/next/no-img-element
-					<img
-						className='w-60 h-40 object-cover rounded-md'
+			{message.image && (
+				<div
+					className={`chat-bubble p-1 ${isMessageFromMe ? 'chat-bubble-primary' : 'chat-bubble-accent'}`}
+				>
+					<Image
 						src={message.image}
-						alt='Message'
+						alt='Shared image'
+						width={240}
+						height={160}
+						className='w-60 h-40 object-cover rounded-md'
 					/>
-				)}
-				<p>{message.content}</p>
-				<div className='text-xs text-gray-300'>{timeAgo(message.time)}</div>
+				</div>
+			)}
+			{message.content && (
+				<div
+					className={`chat-bubble ${isMessageFromMe ? 'chat-bubble-primary' : 'chat-bubble-accent'}`}
+				>
+					{message.content}
+				</div>
+			)}
+			<div className='chat-footer text-xs text-base-content/50 mt-1'>
+				{timeAgo(message.time)}
 			</div>
 		</div>
 	);

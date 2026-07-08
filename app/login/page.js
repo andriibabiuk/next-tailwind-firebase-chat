@@ -49,49 +49,47 @@ function Page() {
 		}
 	};
 	return (
-		<div className='flex justify-center items-center h-screen p-10 m-2'>
+		<div className='flex justify-center items-center min-h-screen bg-base-200 p-4'>
 			<form
 				onSubmit={handleSubmit}
-				className='space-y-4 w-full max-w-2xl shadow-lg p-10'
+				className='card w-full max-w-md bg-base-100 shadow-xl'
 			>
-				<h1 className='text-xl text-center font-semibold text-[#0b3a65ff]'>
-					Chat<span className='font-bold text-[#eeab63ff]'>2</span>Chat
-				</h1>
+				<div className='card-body space-y-4'>
+					<h1 className='text-2xl text-center font-semibold'>
+						<span className='text-primary'>Chat</span>
+						<span className='font-bold text-secondary'>2</span>
+						<span className='text-primary'>Chat</span>
+					</h1>
 
-				<div>
-					<label className='label'>
-						<span className='label-text'>Email</span>
-					</label>
-					<input
-						type='text'
-						placeholder='Enter your email'
-						value={email}
-						onChange={e => setEmail(e.target.value)}
-						className='input input-bordered w-full'
-					/>
-					{errors.email && (
-						<span className='text-sm text-red-500'>{errors.email}</span>
-					)}
-				</div>
-				<div>
-					<label className='label'>
-						<span className='label-text'>Password</span>
-					</label>
-					<input
-						type='password'
-						placeholder='Enter your password'
-						value={password}
-						onChange={e => setPassword(e.target.value)}
-						className='input input-bordered w-full'
-					/>
-					{errors.password && (
-						<span className='text-sm text-red-500'>{errors.password}</span>
-					)}
-				</div>
+					<fieldset className='fieldset'>
+						<label className='label'>Email</label>
+						<input
+							type='text'
+							placeholder='Enter your email'
+							value={email}
+							onChange={e => setEmail(e.target.value)}
+							className={`input input-bordered w-full ${errors.email ? 'input-error' : ''}`}
+						/>
+						{errors.email && (
+							<span className='text-sm text-error'>{errors.email}</span>
+						)}
+					</fieldset>
+					<fieldset className='fieldset'>
+						<label className='label'>Password</label>
+						<input
+							type='password'
+							placeholder='Enter your password'
+							value={password}
+							onChange={e => setPassword(e.target.value)}
+							className={`input input-bordered w-full ${errors.password ? 'input-error' : ''}`}
+						/>
+						{errors.password && (
+							<span className='text-sm text-error'>{errors.password}</span>
+						)}
+					</fieldset>
 
-				<div>
 					<button
-						className='btn btn-block bg-[#0b3a65ff] text-white'
+						className='btn btn-primary btn-block'
 						disabled={loading}
 						type='submit'
 					>
@@ -101,16 +99,13 @@ function Page() {
 							'Login'
 						)}
 					</button>
+					<span className='text-center text-sm'>
+						Don&apos;t have an Account?{' '}
+						<Link href='/register' className='link link-primary'>
+							Register
+						</Link>
+					</span>
 				</div>
-				<span>
-					Don&apos;t have an Account?{' '}
-					<Link
-						href='/register'
-						className='text-blue-600 hover:text-blue-800 hover:underline'
-					>
-						Register
-					</Link>
-				</span>
 			</form>
 		</div>
 	);

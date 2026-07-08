@@ -10,6 +10,7 @@ import {
 	updateDoc,
 	where,
 } from 'firebase/firestore';
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import MessageCard from './MessageCard';
 import MessageInput from './MessageInput';
@@ -41,6 +42,12 @@ function ChatRoom({ user, selectedChatroom }) {
 		);
 		return unsubscribe;
 	}, [chatroomId]);
+	useEffect(() => {
+		messagesContainerRef.current?.scrollTo({
+			top: messagesContainerRef.current.scrollHeight,
+			behavior: 'smooth',
+		});
+	}, [messages]);
 	const sendMessage = async e => {
 		const messageCollection = collection(firestore, 'messages');
 		if (message.trim() === '' && !image) {
@@ -66,9 +73,29 @@ function ChatRoom({ user, selectedChatroom }) {
 			console.log(error);
 		}
 	};
+	if (!selectedChatroom) {
+		return (
+			<div className='flex flex-col items-center justify-center h-screen text-base-content/50'>
+				<p className='text-lg'>Select a conversation to start chatting</p>
+			</div>
+		);
+	}
 	return (
 		<div className='flex flex-col h-screen'>
-			<div className='flex-1 overflow-y-auto p-10'>
+			<div className='flex items-center gap-3 p-4 border-b border-base-300 bg-base-100'>
+				<div className='avatar'>
+					<div className='w-10 rounded-full'>
+						<Image
+							src={other.avatarUrl}
+							alt={other.name}
+							width={40}
+							height={40}
+						/>
+					</div>
+				</div>
+				<h2 className='font-semibold'>{other.name}</h2>
+			</div>
+			<div ref={messagesContainerRef} className='flex-1 overflow-y-auto p-6'>
 				{messages?.map(message => (
 					<MessageCard
 						key={message.id}

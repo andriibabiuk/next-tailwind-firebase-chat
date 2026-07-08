@@ -28,11 +28,11 @@ export default function Home() {
 		return () => unsubscribe();
 	}, [auth, router]);
 	return (
-		<div className='flex h-screen'>
-			<div className='shrink-0 w-3/12'>
+		<div className='flex h-screen bg-base-200'>
+			<div className='w-80 shrink-0 border-r border-base-300 bg-base-100'>
 				<Users userData={user} setSelectedChatroom={setSelectedChatroom} />
 			</div>
-			<div className='grow w-3/12'>
+			<div className='flex-1'>
 				<ChatRoom user={user} selectedChatroom={selectedChatroom} />
 			</div>
 		</div>

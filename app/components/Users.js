@@ -12,6 +12,7 @@ import {
 } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { FaSignOutAlt } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import UserCard from './UserCard';
 
@@ -109,75 +110,93 @@ function Users({ userData, setSelectedChatroom }) {
 		};
 		setSelectedChatroom(data);
 	};
+	const otherUsers = users.filter(user => user.id !== userData.id);
 	return (
-		<div className='shadow-lg h-screen overflow-auto mt-4 mb-20'>
-			<div className='flex justify-between p-4'>
+		<div className='flex flex-col h-screen'>
+			<div className='flex items-center justify-between p-4 border-b border-base-300'>
+				<h1 className='text-lg font-semibold'>
+					<span className='text-primary'>Chat</span>
+					<span className='font-bold text-secondary'>2</span>
+					<span className='text-primary'>Chat</span>
+				</h1>
+				<button
+					onClick={handleLogout}
+					className='btn btn-ghost btn-sm btn-circle'
+					title='Logout'
+				>
+					<FaSignOutAlt />
+				</button>
+			</div>
+			<div className='tabs tabs-boxed mx-4 mt-4'>
 				<button
 					onClick={() => handleTabClick('users')}
-					className={`btn btn-outline ${activeTab === 'users' ? 'btn-primary' : ''}`}
+					className={`tab ${activeTab === 'users' ? 'tab-active' : ''}`}
 				>
 					Users
 				</button>
 				<button
 					onClick={() => handleTabClick('chatrooms')}
-					className={`btn btn-outline ${activeTab === 'chatrooms' ? 'btn-primary' : ''}`}
+					className={`tab ${activeTab === 'chatrooms' ? 'tab-active' : ''}`}
 				>
 					Chatrooms
 				</button>
-				<button onClick={handleLogout} className={`btn btn-outline `}>
-					Logout
-				</button>
 			</div>
-			<div>
+			<div className='flex-1 overflow-auto mt-2'>
 				{activeTab === 'chatrooms' && (
-					<>
-						<h1 className='px-4 text-base font-semibold'>ChatRooms</h1>
-
-						{userChatrooms.map(chatroom => {
-							const otherUserId = chatroom.users.find(id => id !== userData.id);
-							const otherUser = chatroom.usersData[otherUserId];
-							return (
-								<div
-									key={chatroom.id}
-									onClick={() => {
-										openChat(chatroom);
-									}}
-								>
-									<UserCard
-										name={otherUser.name}
-										avatarUrl={otherUser.avatarUrl}
-										latestMessageText={chatroom.lastMessage}
-										time='2h ago'
-										type={'users'}
-									/>
-								</div>
-							);
-						})}
-					</>
-				)}
-			</div>
-			<div>
-				{activeTab === 'users' && (
-					<>
-						<h1 className='px-4 text-base font-semibold'>Users</h1>
-						{loading ? (
-							<p>Loading ...</p>
+					<div>
+						{loading2 ? (
+							<div className='flex justify-center p-8'>
+								<span className='loading loading-spinner loading-md text-primary'></span>
+							</div>
+						) : userChatrooms.length === 0 ? (
+							<p className='text-center text-sm text-base-content/60 p-8'>
+								No chatrooms yet. Start one from the Users tab.
+							</p>
 						) : (
-							users.map(
-								user =>
-									user.id !== userData.id && (
-										<div key={user.id} onClick={() => createChat(user)}>
-											<UserCard
-												name={user.name}
-												avatarUrl={user.avatarUrl}
-												time='2h ago'
-												type={'users'}
-											/>
-										</div>
-									),
-							)
+							userChatrooms.map(chatroom => {
+								const otherUserId = chatroom.users.find(
+									id => id !== userData.id,
+								);
+								const otherUser = chatroom.usersData[otherUserId];
+								return (
+									<div
+										key={chatroom.id}
+										onClick={() => openChat(chatroom)}
+										className='mx-2 rounded-lg hover:bg-base-200 cursor-pointer transition-colors'
+									>
+										<UserCard
+											name={otherUser.name}
+											avatarUrl={otherUser.avatarUrl}
+											latestMessageText={chatroom.lastMessage}
+										/>
+									</div>
+								);
+							})
 						)}
-					</>
+					</div>
+				)}
+				{activeTab === 'users' && (
+					<div>
+						{loading ? (
+							<div className='flex justify-center p-8'>
+								<span className='loading loading-spinner loading-md text-primary'></span>
+							</div>
+						) : otherUsers.length === 0 ? (
+							<p className='text-center text-sm text-base-content/60 p-8'>
+								No other users yet.
+							</p>
+						) : (
+							otherUsers.map(user => (
+								<div
+									key={user.id}
+									onClick={() => createChat(user)}
+									className='mx-2 rounded-lg hover:bg-base-200 cursor-pointer transition-colors'
+								>
+									<UserCard name={user.name} avatarUrl={user.avatarUrl} />
+								</div>
+							))
+						)}
+					</div>
 				)}
 			</div>
 		</div>
