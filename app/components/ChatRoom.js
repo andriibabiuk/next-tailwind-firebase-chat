@@ -8,7 +8,7 @@ function ChatRoom({ user }) {
 			sender: 'katy perry',
 			avatarUrl:
 				'https://avataaars.io/?accessoriesType=Wayfarers&avatarStyle=Circle&clotheColor=Black&clotheType=Hoodie&eyeType=WinkWacky&eyebrowType=UnibrowNatural&facialHairColor=Brown&facialHairType=BeardLight&hairColor=Auburn&hatColor=Gray02&mouthType=Tongue&skinColor=Black&topType=ShortHairFrizzle',
-			text: 'Hey, how are you?',
+			content: 'Hey, how are you?',
 			time: '2h ago',
 		},
 		{
@@ -16,7 +16,7 @@ function ChatRoom({ user }) {
 			sender: 'test',
 			avatarUrl:
 				'https://avataaars.io/?accessoriesType=Wayfarers&avatarStyle=Circle&clotheColor=Black&clotheType=Hoodie&eyeType=WinkWacky&eyebrowType=UnibrowNatural&facialHairColor=Brown&facialHairType=BeardLight&hairColor=Auburn&hatColor=Gray02&mouthType=Tongue&skinColor=Black&topType=ShortHairFrizzle',
-			text: 'Hey, how are you?',
+			content: 'Hey, how are you?',
 			time: '2h ago',
 		},
 	];
