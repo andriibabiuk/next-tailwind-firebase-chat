@@ -15,10 +15,10 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import UserCard from './UserCard';
 
-function Users({ userData }) {
+function Users({ userData, setSelectedChatroom }) {
 	const [activeTab, setActiveTab] = useState('users');
 	const [loading, setLoading] = useState(true);
-	const [loading2, setLoading2] = useState(false);
+	const [loading2, setLoading2] = useState(true);
 	const [users, setUsers] = useState([]);
 	const [userChatrooms, setUserChatrooms] = useState([]);
 	const auth = getAuth(app);
@@ -39,6 +39,25 @@ function Users({ userData }) {
 		});
 		return unsubscribe;
 	}, []);
+
+	useEffect(() => {
+		if (!userData) {
+			return;
+		}
+		const chatroomsQuery = query(
+			collection(firestore, 'chatrooms'),
+			where('users', 'array-contains', userData.id),
+		);
+		const unsubscribe = onSnapshot(chatroomsQuery, querySnapshot => {
+			const chatrooms = querySnapshot.docs.map(doc => ({
+				id: doc.id,
+				...doc.data(),
+			}));
+			setUserChatrooms(chatrooms);
+			setLoading2(false);
+		});
+		return unsubscribe;
+	}, [userData]);
 	const handleLogout = () => {
 		signOut(auth)
 			.then(() => {
@@ -81,6 +100,15 @@ function Users({ userData }) {
 			toast.error(error.message);
 		}
 	};
+	const openChat = chatroom => {
+		const data = {
+			id: chatroom.id,
+			myData: userData,
+			otherData:
+				chatroom.usersData[chatroom.users.find(id => id !== userData.id)],
+		};
+		setSelectedChatroom(data);
+	};
 	return (
 		<div className='shadow-lg h-screen overflow-auto mt-4 mb-20'>
 			<div className='flex justify-between p-4'>
@@ -104,20 +132,27 @@ function Users({ userData }) {
 				{activeTab === 'chatrooms' && (
 					<>
 						<h1 className='px-4 text-base font-semibold'>ChatRooms</h1>
-						<UserCard
-							name='katy perry'
-							avatarUrl='https://avataaars.io/?accessoriesType=Wayfarers&avatarStyle=Circle&clotheColor=Black&clotheType=Hoodie&eyeType=WinkWacky&eyebrowType=UnibrowNatural&facialHairColor=Brown&facialHairType=BeardLight&hairColor=Auburn&hatColor=Gray02&mouthType=Tongue&skinColor=Black&topType=ShortHairFrizzle'
-							latestMessageText='Hey, how are you?'
-							time='2h ago'
-							type={'chat'}
-						/>
-						<UserCard
-							name='katy perry'
-							avatarUrl='https://avataaars.io/?accessoriesType=Wayfarers&avatarStyle=Circle&clotheColor=Black&clotheType=Hoodie&eyeType=WinkWacky&eyebrowType=UnibrowNatural&facialHairColor=Brown&facialHairType=BeardLight&hairColor=Auburn&hatColor=Gray02&mouthType=Tongue&skinColor=Black&topType=ShortHairFrizzle'
-							latestMessageText='Hey, how are you?'
-							time='2h ago'
-							type={'chat'}
-						/>
+
+						{userChatrooms.map(chatroom => {
+							const otherUserId = chatroom.users.find(id => id !== userData.id);
+							const otherUser = chatroom.usersData[otherUserId];
+							return (
+								<div
+									key={chatroom.id}
+									onClick={() => {
+										openChat(chatroom);
+									}}
+								>
+									<UserCard
+										name={otherUser.name}
+										avatarUrl={otherUser.avatarUrl}
+										latestMessageText={chatroom.lastMessage}
+										time='2h ago'
+										type={'users'}
+									/>
+								</div>
+							);
+						})}
 					</>
 				)}
 			</div>

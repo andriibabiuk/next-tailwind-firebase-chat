@@ -11,6 +11,8 @@ export default function Home() {
 	const auth = getAuth(app);
 	const [user, setUser] = useState(null);
 	const router = useRouter();
+	const [selectedChatroom, setSelectedChatroom] = useState(null);
+
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, async user => {
 			if (user) {
@@ -28,10 +30,10 @@ export default function Home() {
 	return (
 		<div className='flex h-screen'>
 			<div className='shrink-0 w-3/12'>
-				<Users userData={user} />
+				<Users userData={user} setSelectedChatroom={setSelectedChatroom} />
 			</div>
 			<div className='grow w-3/12'>
-				<ChatRoom user={user} />
+				<ChatRoom user={user} selectedChatroom={selectedChatroom} />
 			</div>
 		</div>
 	);
