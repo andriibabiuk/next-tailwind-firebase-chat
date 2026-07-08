@@ -16,7 +16,7 @@ export default function Home() {
 			if (user) {
 				const userRef = doc(firestore, 'users', user.uid);
 				const userSnap = await getDoc(userRef);
-				const userData = userSnap.data();
+				const userData = { id: userSnap.id, ...userSnap.data() };
 				setUser(userData);
 			} else {
 				setUser(null);
@@ -28,7 +28,7 @@ export default function Home() {
 	return (
 		<div className='flex h-screen'>
 			<div className='shrink-0 w-3/12'>
-				<Users user={user} />
+				<Users userData={user} />
 			</div>
 			<div className='grow w-3/12'>
 				<ChatRoom user={user} />
