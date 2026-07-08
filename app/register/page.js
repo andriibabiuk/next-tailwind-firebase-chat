@@ -1,0 +1,168 @@
+'use client';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { AvatarGenerator } from 'random-avatar-generator';
+import { useState } from 'react';
+function generateNewAvatar() {
+	const generator = new AvatarGenerator();
+	return generator.generateRandomAvatar();
+}
+function Page() {
+	const [name, setName] = useState('');
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const [confirmPassword, setConfirmPassword] = useState('');
+	const [errors, setErrors] = useState({});
+	const [loading, setLoading] = useState(false);
+	const [avatarUrl, setAvatarUrl] = useState(generateNewAvatar);
+	const router = useRouter();
+	const handleRefreshAvatar = () => {
+		setAvatarUrl(generateNewAvatar());
+	};
+	const validateForm = () => {
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		const newErrors = {};
+		if (!name.trim()) {
+			newErrors.name = 'Name is required';
+		}
+		if (!email.trim() || !emailRegex.test(email)) {
+			newErrors.email = 'Email is invalid!';
+		}
+		if (password.length <= 6) {
+			newErrors.password = 'Password must be at least 6 characters long';
+		}
+		if (password !== confirmPassword) {
+			newErrors.confirmPassword = 'Passwords do not match';
+		}
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
+	const handleSubmit = async e => {
+		e.preventDefault();
+		setLoading(true);
+		try {
+			if (!validateForm()) {
+				setLoading(false);
+				return;
+			}
+			alert('Register successfully!');
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setLoading(false);
+		}
+	};
+	return (
+		<div className='flex justify-center items-center h-screen p-10 m-2'>
+			<form
+				onSubmit={handleSubmit}
+				className='space-y-4 w-full max-w-2xl shadow-lg p-10'
+			>
+				<h1 className='text-xl text-center font-semibold text-[#0b3a65ff]'>
+					Chat<span className='font-bold text-[#eeab63ff]'>2</span>Chat
+				</h1>
+				<div className='flex items-center space-y-2 justify-between border border-gray-200 p-2'>
+					{/* eslint-disable-next-line @next/next/no-img-element -- external SVG avatar; next/image doesn't optimize SVGs anyway */}
+					<img
+						src={avatarUrl}
+						className='rounded-full h-20 w-20'
+						alt='avatar'
+					/>
+					<button
+						type='button'
+						className='btn btn-outline'
+						onClick={handleRefreshAvatar}
+					>
+						New Avatar
+					</button>
+				</div>
+				<div>
+					<label className='label'>
+						<span className='label-text'>Name</span>
+					</label>
+					<input
+						type='text'
+						placeholder='Enter your name'
+						value={name}
+						onChange={e => setName(e.target.value)}
+						className='input input-bordered w-full'
+					/>
+					{errors.name && (
+						<span className='text-sm text-red-500'>{errors.name}</span>
+					)}
+				</div>
+				<div>
+					<label className='label'>
+						<span className='label-text'>Email</span>
+					</label>
+					<input
+						type='text'
+						placeholder='Enter your email'
+						value={email}
+						onChange={e => setEmail(e.target.value)}
+						className='input input-bordered w-full'
+					/>
+					{errors.email && (
+						<span className='text-sm text-red-500'>{errors.email}</span>
+					)}
+				</div>
+				<div>
+					<label className='label'>
+						<span className='label-text'>Password</span>
+					</label>
+					<input
+						type='password'
+						placeholder='Enter your password'
+						value={password}
+						onChange={e => setPassword(e.target.value)}
+						className='input input-bordered w-full'
+					/>
+					{errors.password && (
+						<span className='text-sm text-red-500'>{errors.password}</span>
+					)}
+				</div>
+				<div>
+					<label className='label'>
+						<span className='label-text'>Confirm Password</span>
+					</label>
+					<input
+						type='password'
+						placeholder='Confirm your password'
+						value={confirmPassword}
+						onChange={e => setConfirmPassword(e.target.value)}
+						className='input input-bordered w-full'
+					/>
+					{errors.confirmPassword && (
+						<span className='text-sm text-red-500'>
+							{errors.confirmPassword}
+						</span>
+					)}
+				</div>
+				<div>
+					<button
+						className='btn btn-block bg-[#0b3a65ff] text-white'
+						disabled={loading}
+						type='submit'
+					>
+						{loading ? (
+							<span className='loading loading-spinner loading-sm'></span>
+						) : (
+							'Register'
+						)}
+					</button>
+				</div>
+				<span>
+					Already have an Account?{' '}
+					<Link
+						href='/login'
+						className='text-blue-600 hover:text-blue-800 hover:underline'
+					>
+						Login
+					</Link>
+				</span>
+			</form>
+		</div>
+	);
+}
+
+export default Page;
