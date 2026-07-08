@@ -20,6 +20,26 @@ function ChatRoom({ user, selectedChatroom }) {
 	const [message, setMessage] = useState('');
 	const [messages, setMessages] = useState([]);
 	const messagesContainerRef = useRef(null);
+	useEffect(() => {
+		if (!chatroomId) {
+			return;
+		}
+		const unsubscribe = onSnapshot(
+			query(
+				collection(firestore, 'messages'),
+				where('chatroomId', '==', chatroomId),
+				orderBy('time', 'asc'),
+			),
+			snapshot => {
+				const messageData = snapshot.docs.map(doc => ({
+					id: doc.id,
+					...doc.data(),
+				}));
+				setMessages(messageData);
+			},
+		);
+		return unsubscribe;
+	}, [chatroomId]);
 	const sendMessage = async e => {
 		const messageCollection = collection(firestore, 'messages');
 		if (message.trim() === '') {
@@ -48,7 +68,12 @@ function ChatRoom({ user, selectedChatroom }) {
 		<div className='flex flex-col h-screen'>
 			<div className='flex-1 overflow-y-auto p-10'>
 				{messages?.map(message => (
-					<MessageCard key={message.id} message={message} user={'test'} />
+					<MessageCard
+						key={message.id}
+						message={message}
+						me={me}
+						other={other}
+					/>
 				))}
 			</div>
 			<MessageInput
