@@ -28,7 +28,7 @@ export default function Home() {
 	return (
 		<div className='flex h-screen'>
 			<div className='shrink-0 w-3/12'>
-				<Users />
+				<Users user={user} />
 			</div>
 			<div className='grow w-3/12'>
 				<ChatRoom />
