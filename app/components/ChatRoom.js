@@ -1,24 +1,25 @@
-import MessageCard from './MessageCard';
-import MessageInput from './MessageInput';
-import { useState, useEffect, useRef } from 'react';
 import { firestore } from '@/lib/firebase';
 import {
 	addDoc,
 	collection,
+	doc,
 	onSnapshot,
 	orderBy,
 	query,
-	doc,
 	serverTimestamp,
-	where,
 	updateDoc,
+	where,
 } from 'firebase/firestore';
+import { useEffect, useRef, useState } from 'react';
+import MessageCard from './MessageCard';
+import MessageInput from './MessageInput';
 function ChatRoom({ user, selectedChatroom }) {
 	const me = selectedChatroom?.myData;
 	const other = selectedChatroom?.otherData;
 	const chatroomId = selectedChatroom?.id;
 	const [message, setMessage] = useState('');
 	const [messages, setMessages] = useState([]);
+	const [image, setImage] = useState(null);
 	const messagesContainerRef = useRef(null);
 	useEffect(() => {
 		if (!chatroomId) {
@@ -42,7 +43,7 @@ function ChatRoom({ user, selectedChatroom }) {
 	}, [chatroomId]);
 	const sendMessage = async e => {
 		const messageCollection = collection(firestore, 'messages');
-		if (message.trim() === '') {
+		if (message.trim() === '' && !image) {
 			return;
 		}
 		try {
@@ -51,14 +52,15 @@ function ChatRoom({ user, selectedChatroom }) {
 				sender: me.id,
 				content: message,
 				time: serverTimestamp(),
-				image: '',
+				image: image,
 				messageType: 'text',
 			};
 			await addDoc(messageCollection, messageData);
 			setMessage('');
+			setImage(null);
 			const chatroomRef = doc(firestore, 'chatrooms', chatroomId);
 			await updateDoc(chatroomRef, {
-				lastMessage: message,
+				lastMessage: message ? message : 'Image',
 			});
 		} catch (error) {
 			console.log(error);
@@ -80,6 +82,8 @@ function ChatRoom({ user, selectedChatroom }) {
 				sendMessage={sendMessage}
 				message={message}
 				setMessage={setMessage}
+				image={image}
+				setImage={setImage}
 			/>
 		</div>
 	);
